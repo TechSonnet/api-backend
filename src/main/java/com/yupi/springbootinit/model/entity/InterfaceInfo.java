@@ -54,6 +54,7 @@ public class InterfaceInfo implements Serializable {
      */
     private String method;
 
+
     /**
      * 创建人
      */

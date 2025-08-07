@@ -64,4 +64,9 @@ public class InterfaceInfoQueryRequest {
      */
     private Long userId;
 
+    /**
+     * 请求参数
+     */
+    private String requestParams;
+
 }

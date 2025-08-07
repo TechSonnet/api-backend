@@ -1,11 +1,13 @@
 package com.yupi.springbootinit.controller;
 
+import com.google.gson.Gson;
 import com.yupi.springbootinit.annotation.AuthCheck;
 import com.yupi.springbootinit.common.*;
 import com.yupi.springbootinit.constant.UserConstant;
 import com.yupi.springbootinit.exception.BusinessException;
 import com.yupi.springbootinit.exception.ThrowUtils;
 import com.yupi.springbootinit.model.dto.interfaceInfo.InterfaceInfoAddRequest;
+import com.yupi.springbootinit.model.dto.interfaceInfo.InterfaceInfoInvokeRequest;
 import com.yupi.springbootinit.model.dto.interfaceInfo.InterfaceInfoUpdateRequest;
 import com.yupi.springbootinit.model.entity.InterfaceInfo;
 import com.yupi.springbootinit.model.entity.User;
@@ -14,7 +16,9 @@ import com.yupi.springbootinit.service.InterfaceInfoService;
 import com.yupi.springbootinit.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.example.apiinterfacesdk.client.ApiClient;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +41,8 @@ public class InterfaceInfoController {
 
     @Resource
     private UserService userService;
+    @Autowired
+    private ApiClient apiClient;
 
 
     // region 增删改查
@@ -115,6 +121,12 @@ public class InterfaceInfoController {
     }
 
 
+    /**
+     * 上线接口
+     * @param idRequest
+     * @param request
+     * @return
+     */
     @PostMapping("/online")
     @AuthCheck(mustRole = "admin")
     public BaseResponse<Boolean> onlineInterface(@RequestBody IDRequest idRequest,
@@ -144,6 +156,89 @@ public class InterfaceInfoController {
 
         // 返回修改结果
         return ResultUtils.success(result);
+    }
+
+
+    /**
+     * 下线接口
+     * @param idRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/offline")
+    @AuthCheck(mustRole = "admin")
+    public BaseResponse<Boolean> offlineInterface(@RequestBody IDRequest idRequest,
+                                                 HttpServletRequest request){
+        // 基本参数校验
+        if (idRequest == null || idRequest.getId() < 0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+
+        // 获取需上线接口 ID，判断接口是否存在
+        Long interfaceID = idRequest.getId();
+        InterfaceInfo interfaceInfo = interfaceInfoService.getById(interfaceID);
+        if (interfaceInfo == null){
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+
+        // 判断接口是否可用，借用开发的SDK，模拟调用
+        if (StringUtils.isBlank("res")){
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "接口验证失败");
+        }
+
+        // 修改其对应状态
+        InterfaceInfo interfaceInfo01 = new InterfaceInfo();
+        interfaceInfo01.setId(interfaceID);
+        interfaceInfo01.setStatus(InterfaceInfoStatusEnum.OFFLINE.getValue());
+        boolean result = interfaceInfoService.updateById(interfaceInfo01);
+
+        // 返回修改结果
+        return ResultUtils.success(result);
+    }
+
+    /**
+     * 获得
+     * @param interfaceInfoInvokeRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/invoke")
+    public BaseResponse<String> invokeInterface(@RequestBody InterfaceInfoInvokeRequest interfaceInfoInvokeRequest,
+                                                 HttpServletRequest request){
+
+        // 基本参数校验
+        if (interfaceInfoInvokeRequest == null || interfaceInfoInvokeRequest.getId() <= 0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+
+        // 获取请求中的接口参数并校验
+        Long id = interfaceInfoInvokeRequest.getId();
+        String requestParams = interfaceInfoInvokeRequest.getRequestParams();
+        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
+        if (oldInterfaceInfo == null){
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        if (oldInterfaceInfo.getStatus() == InterfaceInfoStatusEnum.OFFLINE.getValue()){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "this interface is closed");
+        }
+
+        // 获取用户信息
+        User loginUser = userService.getLoginUser(request);
+        String accessKey = loginUser.getAccessKey();
+        String secretKey = loginUser.getSecretKey();
+        Gson gson = new Gson();
+        // 注意此处 GSON 的使用方式，可以和其它使用进行对比
+        org.example.apiinterfacesdk.model.User user = gson.fromJson(requestParams, org.example.apiinterfacesdk.model.User.class);
+        user.setUserName(loginUser.getUserName());
+        user.setAccessKey("yvpi");
+        user.setUserPassword(loginUser.getUserPassword());
+
+
+        // 测试接口
+        String userNameByPost = apiClient.getUserNameByPost(user);
+
+        // 返回调用结果
+        return ResultUtils.success(userNameByPost);
     }
 
 }

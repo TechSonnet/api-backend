@@ -71,6 +71,16 @@ public class User implements Serializable {
     private int gender;
 
     /**
+     * 访问公钥
+     */
+    private String accessKey;
+
+    /**
+     * 签名秘钥
+     */
+    private String secretKey;
+
+    /**
      * 创建时间
      */
     private Date createTime;

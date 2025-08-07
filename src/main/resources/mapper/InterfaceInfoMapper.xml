@@ -14,6 +14,7 @@
             <result property="status" column="status" />
             <result property="method" column="method" />
             <result property="userId" column="userId" />
+            <result property="requestParams" column="requestParams" />
             <result property="createTime" column="createTime" />
             <result property="updateTime" column="updateTime" />
             <result property="isDelete" column="isDelete" />

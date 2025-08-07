@@ -1,5 +1,6 @@
 package com.yupi.springbootinit.model.enums;
 
+import lombok.Data;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.Arrays;
@@ -29,6 +30,8 @@ public enum InterfaceInfoStatusEnum {
     /**
      * 获取值列表
      *
+     * 这是所有枚举类都应该有的一个方法
+     *
      * @return
      */
     public static List<Integer> getValues() {
@@ -40,6 +43,8 @@ public enum InterfaceInfoStatusEnum {
      *
      * @param value 枚举值
      * @return 对应的枚举对象，若未找到则返回 null
+     *
+     * 注意此刻 枚举值和对象的概念，一般在程序中，我们绝大部分时间都会使用枚举值
      */
     public static InterfaceInfoStatusEnum getEnumByValue(int value) {
         // 直接遍历枚举值进行比较

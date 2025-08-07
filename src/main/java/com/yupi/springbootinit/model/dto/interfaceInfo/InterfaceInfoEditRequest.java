@@ -49,4 +49,9 @@ public class InterfaceInfoEditRequest {
      * 创建人
      */
     private Long userId;
+
+    /**
+     * 请求参数
+     */
+    private String requestParams;
 }

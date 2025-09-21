@@ -1,6 +1,7 @@
 package com.sonnet.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.sonnet.apicommon.model.entity.User;
 import com.sonnet.common.BaseResponse;
 import com.sonnet.common.ErrorCode;
 import com.sonnet.common.ResultUtils;
@@ -10,7 +11,6 @@ import com.sonnet.model.dto.post.PostQueryRequest;
 import com.sonnet.model.dto.postfavour.PostFavourAddRequest;
 import com.sonnet.model.dto.postfavour.PostFavourQueryRequest;
 import com.sonnet.model.entity.Post;
-import com.sonnet.model.entity.User;
 import com.sonnet.model.vo.PostVO;
 import com.sonnet.service.PostFavourService;
 import com.sonnet.service.PostService;

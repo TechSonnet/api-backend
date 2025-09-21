@@ -1,8 +1,8 @@
 package com.sonnet.service;
 
+import com.sonnet.apicommon.model.entity.User;
 import com.sonnet.model.entity.PostThumb;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.sonnet.model.entity.User;
 
 /**
  * 帖子点赞服务

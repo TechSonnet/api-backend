@@ -1,6 +1,7 @@
 package com.sonnet.controller;
 
 import cn.hutool.core.io.FileUtil;
+import com.sonnet.apicommon.model.entity.User;
 import com.sonnet.common.BaseResponse;
 import com.sonnet.common.ErrorCode;
 import com.sonnet.common.ResultUtils;
@@ -8,7 +9,6 @@ import com.sonnet.constant.FileConstant;
 import com.sonnet.exception.BusinessException;
 import com.sonnet.manager.CosManager;
 import com.sonnet.model.dto.file.UploadFileRequest;
-import com.sonnet.model.entity.User;
 import com.sonnet.model.enums.FileUploadBizEnum;
 import com.sonnet.service.UserService;
 import java.io.File;

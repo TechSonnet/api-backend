@@ -16,8 +16,6 @@ package com.sonnet.provider;/*
  */
 
 
-
-import com.sonnet.provider.DemoService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.apache.dubbo.rpc.RpcContext;
 
@@ -27,6 +25,8 @@ import org.apache.dubbo.rpc.RpcContext;
  * @author <a href="https://github.com/liyupi">程序员鱼皮</a>
  * @from <a href="https://yupi.icu">编程导航知识星球</a>
  */
+
+// 注意这个注解加的位置，在实现类的地方
 @DubboService
 public class DemoServiceImpl implements DemoService {
 

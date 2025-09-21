@@ -1,11 +1,11 @@
 package com.sonnet.controller;
 
+import com.sonnet.apicommon.model.entity.User;
 import com.sonnet.common.BaseResponse;
 import com.sonnet.common.ErrorCode;
 import com.sonnet.common.ResultUtils;
 import com.sonnet.exception.BusinessException;
 import com.sonnet.model.dto.postthumb.PostThumbAddRequest;
-import com.sonnet.model.entity.User;
 import com.sonnet.service.PostThumbService;
 import com.sonnet.service.UserService;
 import javax.annotation.Resource;

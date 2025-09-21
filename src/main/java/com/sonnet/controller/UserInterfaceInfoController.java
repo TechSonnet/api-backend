@@ -1,6 +1,7 @@
 package com.sonnet.controller;
 
 import com.sonnet.annotation.AuthCheck;
+import com.sonnet.apicommon.model.entity.User;
 import com.sonnet.common.BaseResponse;
 import com.sonnet.common.DeleteRequest;
 import com.sonnet.common.ErrorCode;
@@ -12,7 +13,6 @@ import com.sonnet.exception.ThrowUtils;
 import com.sonnet.model.dto.userinterfaceinfo.UserInterfaceInfoAddRequest;
 import com.sonnet.model.dto.userinterfaceinfo.UserInterfaceInfoUpdateRequest;
 import com.sonnet.model.entity.UserInterfaceInfo;
-import com.sonnet.model.entity.User;
 import com.sonnet.service.UserInterfaceInfoService;
 import com.sonnet.service.UserService;
 import lombok.extern.slf4j.Slf4j;

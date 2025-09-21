@@ -2,6 +2,8 @@ package com.sonnet.controller;
 
 import com.google.gson.Gson;
 import com.sonnet.annotation.AuthCheck;
+import com.sonnet.apicommon.model.entity.InterfaceInfo;
+import com.sonnet.apicommon.model.entity.User;
 import com.sonnet.common.*;
 import com.sonnet.constant.UserConstant;
 import com.sonnet.exception.BusinessException;
@@ -9,8 +11,6 @@ import com.sonnet.exception.ThrowUtils;
 import com.sonnet.model.dto.interfaceinfo.InterfaceInfoAddRequest;
 import com.sonnet.model.dto.interfaceinfo.InterfaceInfoInvokeRequest;
 import com.sonnet.model.dto.interfaceinfo.InterfaceInfoUpdateRequest;
-import com.sonnet.model.entity.InterfaceInfo;
-import com.sonnet.model.entity.User;
 import com.sonnet.model.enums.InterfaceInfoStatusEnum;
 import com.sonnet.service.InterfaceInfoService;
 import com.sonnet.service.UserService;
@@ -230,8 +230,9 @@ public class InterfaceInfoController {
         Gson gson = new Gson();
         // 注意此处 GSON 的使用方式，可以和其它使用进行对比
         org.example.apiinterfacesdk.model.User user = gson.fromJson(requestParams, org.example.apiinterfacesdk.model.User.class);
-        user.setUserName(loginUser.getUserName());
-        user.setAccessKey("yvpi");
+        user.setUserAccount(loginUser.getUserAccount());
+        user.setAccessKey(loginUser.getSecretKey());
+        user.setSecretKey(loginUser.getSecretKey());
         user.setUserPassword(loginUser.getUserPassword());
 
 

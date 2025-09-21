@@ -1,8 +1,8 @@
 package com.sonnet.service;
 
-import com.sonnet.model.entity.InterfaceInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.sonnet.model.vo.InterfaceInfoVO;
+import com.sonnet.apicommon.model.entity.InterfaceInfo;
+import com.sonnet.apicommon.model.vo.InterfaceInfoVO;
 
 import javax.servlet.http.HttpServletRequest;
 

@@ -2,12 +2,12 @@ package com.sonnet.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.sonnet.apicommon.model.entity.User;
 import com.sonnet.common.ErrorCode;
 import com.sonnet.exception.BusinessException;
 import com.sonnet.mapper.PostThumbMapper;
 import com.sonnet.model.entity.Post;
 import com.sonnet.model.entity.PostThumb;
-import com.sonnet.model.entity.User;
 import com.sonnet.service.PostService;
 import com.sonnet.service.PostThumbService;
 import javax.annotation.Resource;

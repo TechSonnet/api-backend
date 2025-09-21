@@ -1,7 +1,7 @@
 package com.sonnet.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.sonnet.model.entity.User;
+import com.sonnet.apicommon.model.entity.User;
 
 /**
  * 用户数据库操作

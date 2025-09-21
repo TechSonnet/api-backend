@@ -1,9 +1,9 @@
 package com.sonnet.aop;
 
 import com.sonnet.annotation.AuthCheck;
+import com.sonnet.apicommon.model.entity.User;
 import com.sonnet.common.ErrorCode;
 import com.sonnet.exception.BusinessException;
-import com.sonnet.model.entity.User;
 import com.sonnet.model.enums.UserRoleEnum;
 import com.sonnet.service.UserService;
 import org.aspectj.lang.ProceedingJoinPoint;

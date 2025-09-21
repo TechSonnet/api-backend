@@ -2,8 +2,8 @@ package com.sonnet.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.sonnet.apicommon.model.entity.User;
 import com.sonnet.model.dto.user.UserQueryRequest;
-import com.sonnet.model.entity.User;
 import com.sonnet.model.vo.LoginUserVO;
 import com.sonnet.model.vo.UserVO;
 import java.util.List;

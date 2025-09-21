@@ -1,11 +1,11 @@
 package com.sonnet.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.sonnet.apicommon.model.entity.InterfaceInfo;
+import com.sonnet.apicommon.model.vo.InterfaceInfoVO;
 import com.sonnet.common.ErrorCode;
 import com.sonnet.exception.BusinessException;
-import com.sonnet.model.entity.InterfaceInfo;
 import com.sonnet.mapper.InterfaceInfoMapper;
-import com.sonnet.model.vo.InterfaceInfoVO;
 import com.sonnet.service.InterfaceInfoService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;

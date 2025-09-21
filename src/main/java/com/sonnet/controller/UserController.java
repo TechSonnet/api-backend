@@ -2,6 +2,7 @@ package com.sonnet.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sonnet.annotation.AuthCheck;
+import com.sonnet.apicommon.model.entity.User;
 import com.sonnet.common.BaseResponse;
 import com.sonnet.common.DeleteRequest;
 import com.sonnet.common.ErrorCode;
@@ -16,7 +17,6 @@ import com.sonnet.model.dto.user.UserQueryRequest;
 import com.sonnet.model.dto.user.UserRegisterRequest;
 import com.sonnet.model.dto.user.UserUpdateMyRequest;
 import com.sonnet.model.dto.user.UserUpdateRequest;
-import com.sonnet.model.entity.User;
 import com.sonnet.model.vo.LoginUserVO;
 import com.sonnet.model.vo.UserVO;
 import com.sonnet.service.UserService;

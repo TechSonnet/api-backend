@@ -4,9 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.sonnet.apicommon.model.entity.User;
 import com.sonnet.model.entity.Post;
 import com.sonnet.model.entity.PostFavour;
-import com.sonnet.model.entity.User;
 
 /**
  * 帖子收藏服务

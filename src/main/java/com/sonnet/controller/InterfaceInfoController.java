@@ -144,16 +144,14 @@ public class InterfaceInfoController {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
 
-        // 判断接口是否可用，借用开发的SDK，模拟调用
-        if (StringUtils.isBlank("res")){
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "接口验证失败");
-        }
+        // todo 判断接口是否可用，借用开发的SDK，模拟调用
+
 
         // 修改其对应状态
-        InterfaceInfo interfaceInfo01 = new InterfaceInfo();
-        interfaceInfo01.setId(interfaceID);
-        interfaceInfo01.setStatus(InterfaceInfoStatusEnum.ONLINE.getValue());
-        boolean result = interfaceInfoService.updateById(interfaceInfo01);
+        InterfaceInfo newInterfaceInfo = new InterfaceInfo();
+        newInterfaceInfo.setId(interfaceID);
+        newInterfaceInfo.setStatus(InterfaceInfoStatusEnum.ONLINE.getValue());
+        boolean result = interfaceInfoService.updateById(newInterfaceInfo);
 
         // 返回修改结果
         return ResultUtils.success(result);
@@ -182,10 +180,7 @@ public class InterfaceInfoController {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
 
-        // 判断接口是否可用，借用开发的SDK，模拟调用
-        if (StringUtils.isBlank("res")){
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "接口验证失败");
-        }
+        // todo 判断接口是否可用，借用开发的SDK，模拟调用
 
         // 修改其对应状态
         InterfaceInfo interfaceInfo01 = new InterfaceInfo();
@@ -212,7 +207,7 @@ public class InterfaceInfoController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
 
-        // 获取请求中的接口参数并校验
+        // 获取请求中的接口参数并进行校验
         Long id = interfaceInfoInvokeRequest.getId();
         String requestParams = interfaceInfoInvokeRequest.getRequestParams();
         InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
@@ -225,19 +220,17 @@ public class InterfaceInfoController {
 
         // 获取用户信息
         User loginUser = userService.getLoginUser(request);
-        String accessKey = loginUser.getAccessKey();
-        String secretKey = loginUser.getSecretKey();
+
+        // 解析前端参数，反序列化
         Gson gson = new Gson();
-        // 注意此处 GSON 的使用方式，可以和其它使用进行对比
-        org.example.apiinterfacesdk.model.User user = gson.fromJson(requestParams, org.example.apiinterfacesdk.model.User.class);
-        user.setUserAccount(loginUser.getUserAccount());
-        user.setAccessKey(loginUser.getAccessKey());
-        user.setSecretKey(loginUser.getSecretKey());
-        user.setUserPassword(loginUser.getUserPassword());
+        org.example.apiinterfacesdk.model.User sdkUser = gson.fromJson(requestParams, org.example.apiinterfacesdk.model.User.class);
+        sdkUser.setUserAccount(loginUser.getUserAccount());
+        sdkUser.setAccessKey(loginUser.getAccessKey());
+        sdkUser.setSecretKey(loginUser.getSecretKey());
+        sdkUser.setUserPassword(loginUser.getUserPassword());
 
-
-        // 测试接口
-        String userNameByPost = apiClient.getUserNameByPost(user);
+        // 接口调用
+        String userNameByPost = apiClient.getUserNameByPost(sdkUser);
 
         // 返回调用结果
         return ResultUtils.success(userNameByPost);

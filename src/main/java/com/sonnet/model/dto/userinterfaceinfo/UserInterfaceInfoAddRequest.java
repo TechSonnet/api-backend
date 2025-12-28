@@ -6,7 +6,6 @@ import java.io.Serializable;
 
 /**
  *  创建请求接口
- *
  *  保留主要的字段，方便前端对接接口
  */
 @Data

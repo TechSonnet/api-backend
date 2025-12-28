@@ -1,4 +1,4 @@
-package com.sonnet.service.impl;
+package com.sonnet.service.impl.inner;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sonnet.apicommon.model.entity.InterfaceInfo;
@@ -7,12 +7,12 @@ import com.sonnet.common.ErrorCode;
 import com.sonnet.exception.BusinessException;
 import com.sonnet.mapper.InterfaceInfoMapper;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
+import org.apache.dubbo.config.annotation.DubboService;
 
 import javax.annotation.Resource;
 
 // @Service 注意这个注解的位置，不在 InnerInterfaceInfoService。但是使用的时候，只需要注入 InnerInterfaceInfoService 即可。
-@Service
+@DubboService
 public class InnerInterfaceInfoServiceImpl implements InnerInterfaceInfoService {
 
     @Resource

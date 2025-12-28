@@ -1,4 +1,4 @@
-package com.sonnet.service.impl;
+package com.sonnet.service.impl.inner;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
@@ -8,11 +8,11 @@ import com.sonnet.common.ErrorCode;
 import com.sonnet.exception.ThrowUtils;
 import com.sonnet.mapper.UserMapper;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
+import org.apache.dubbo.config.annotation.DubboService;
 
 import javax.annotation.Resource;
 
-@Service
+@DubboService
 public class InnerUserServiceImpl implements InnerUserService {
 
     @Resource

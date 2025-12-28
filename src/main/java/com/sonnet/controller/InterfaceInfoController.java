@@ -231,7 +231,7 @@ public class InterfaceInfoController {
         // 注意此处 GSON 的使用方式，可以和其它使用进行对比
         org.example.apiinterfacesdk.model.User user = gson.fromJson(requestParams, org.example.apiinterfacesdk.model.User.class);
         user.setUserAccount(loginUser.getUserAccount());
-        user.setAccessKey(loginUser.getSecretKey());
+        user.setAccessKey(loginUser.getAccessKey());
         user.setSecretKey(loginUser.getSecretKey());
         user.setUserPassword(loginUser.getUserPassword());
 

@@ -1,11 +1,14 @@
 package com.sonnet.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sonnet.apicommon.model.entity.InterfaceInfo;
 import com.sonnet.apicommon.model.vo.InterfaceInfoVO;
 import com.sonnet.common.ErrorCode;
 import com.sonnet.exception.BusinessException;
 import com.sonnet.mapper.InterfaceInfoMapper;
+import com.sonnet.model.dto.interfaceinfo.InterfaceInfoQueryRequest;
 import com.sonnet.service.InterfaceInfoService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -21,23 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, InterfaceInfo>
     implements InterfaceInfoService {
 
-//    保留这个代码模板，这是最基础的请求校验模板，可以以后借用
-//
-//    public void validInterfaceInfo(InterfaceInfo interfaceInfo, boolean add) {
-//        if (interfaceInfo == null) {
-//            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-//        }
-//        // 创建时，参数不能为空
-//        if (add) {
-//            if (StringUtils.isBlank()) {
-//                throw new BusinessException(ErrorCode.PARAMS_ERROR);
-//            }
-//        }
-//        // 有参数则校验
-//        if (StringUtils.isNotBlank(content) && content.length() > 8192) {
-//            throw new BusinessException(ErrorCode.PARAMS_ERROR, "内容过长");
-//        }
-//    }
     @Override
     public void validInterfaceInfo(InterfaceInfo interfaceInfo, boolean add) {
         if (interfaceInfo == null) {
@@ -48,12 +34,12 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         // 创建时，参数不能为空
         if (add) {
             if (StringUtils.isBlank(interfaceName)) {
-                throw new BusinessException(ErrorCode.PARAMS_ERROR, "the name of interfaceInfo is empty");
+                throw new BusinessException(ErrorCode.PARAMS_ERROR, "The name of interfaceInfo is empty!");
             }
         }
         // 有参数则校验
         if (StringUtils.isNotBlank(interfaceName) && interfaceName.length() > 50) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "内容过长");
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "The content is too long!");
         }
     }
 
@@ -69,6 +55,29 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         return InterfaceInfoVO.objToVo(interfaceInfo);
     }
 
+    @Override
+    public Wrapper<InterfaceInfo> getQueryWrapper(InterfaceInfoQueryRequest interfaceInfoQueryRequest) {
+
+        if (interfaceInfoQueryRequest == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "Query params is null!");
+        }
+
+        Long id = interfaceInfoQueryRequest.getId();
+        String name = interfaceInfoQueryRequest.getName();
+        String description = interfaceInfoQueryRequest.getDescription();
+        String url = interfaceInfoQueryRequest.getUrl();
+        Integer status = interfaceInfoQueryRequest.getStatus();
+        String method = interfaceInfoQueryRequest.getMethod();
+        Long userId = interfaceInfoQueryRequest.getUserId();
+        String requestParams = interfaceInfoQueryRequest.getRequestParams();
+        return new QueryWrapper<InterfaceInfo>()
+                .like(StringUtils.isNotBlank(name), "name", name)
+                .like(StringUtils.isNotBlank(description), "description", description)
+                .like(StringUtils.isNotBlank(url), "url", url)
+                .eq(status != null, "status", status)
+                .like(StringUtils.isNotBlank(method), "method", method)
+                .like(StringUtils.isNotBlank(requestParams), "requestParams", requestParams);
+    }
 
 }
 

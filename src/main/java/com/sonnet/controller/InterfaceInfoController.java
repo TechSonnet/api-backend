@@ -1,5 +1,6 @@
 package com.sonnet.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
 import com.sonnet.annotation.AuthCheck;
 import com.sonnet.apicommon.model.entity.InterfaceInfo;
@@ -10,8 +11,11 @@ import com.sonnet.exception.BusinessException;
 import com.sonnet.exception.ThrowUtils;
 import com.sonnet.model.dto.interfaceinfo.InterfaceInfoAddRequest;
 import com.sonnet.model.dto.interfaceinfo.InterfaceInfoInvokeRequest;
+import com.sonnet.model.dto.interfaceinfo.InterfaceInfoQueryRequest;
 import com.sonnet.model.dto.interfaceinfo.InterfaceInfoUpdateRequest;
+import com.sonnet.model.dto.user.UserQueryRequest;
 import com.sonnet.model.enums.InterfaceInfoStatusEnum;
+import com.sonnet.model.vo.UserVO;
 import com.sonnet.service.InterfaceInfoService;
 import com.sonnet.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,13 +23,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.example.apiinterfacesdk.client.ApiClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  *  接口管理
@@ -235,5 +237,44 @@ public class InterfaceInfoController {
         // 返回调用结果
         return ResultUtils.success(userNameByPost);
     }
+
+    /**
+     * 根据 id 获取接口信息（仅管理员）
+     *
+     * @param id
+     * @param request
+     * @return
+     */
+    @GetMapping("/get")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<InterfaceInfo> getInterfaceInfoById(long id, HttpServletRequest request) {
+        if (id <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        InterfaceInfo interfaceInfo = interfaceInfoService.getById(id);
+        ThrowUtils.throwIf(interfaceInfo == null, ErrorCode.NOT_FOUND_ERROR);
+        return ResultUtils.success(interfaceInfo);
+    }
+
+    /**
+     * 分页获取用户列表（仅管理员）
+     *
+     * @param interfaceInfoQueryRequest
+     * @param request
+     * @return
+     */
+    @GetMapping("/list/page")
+    public BaseResponse<Page<InterfaceInfo>> listInterfaceInfoByPage(@RequestBody InterfaceInfoQueryRequest interfaceInfoQueryRequest,
+                                                   HttpServletRequest request) {
+        long current = interfaceInfoQueryRequest.getCurrent();
+        long size = interfaceInfoQueryRequest.getPageSize();
+        Page<InterfaceInfo> interfaceInfoPage = interfaceInfoService.page(new Page<>(current, size),
+                interfaceInfoService.getQueryWrapper(interfaceInfoQueryRequest));
+        return ResultUtils.success(interfaceInfoPage);
+    }
+
+
+
+
 
 }

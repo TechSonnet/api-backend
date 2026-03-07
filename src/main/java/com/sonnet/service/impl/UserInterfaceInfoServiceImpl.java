@@ -1,10 +1,13 @@
 package com.sonnet.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sonnet.common.ErrorCode;
 import com.sonnet.exception.BusinessException;
 import com.sonnet.mapper.UserInterfaceInfoMapper;
+import com.sonnet.model.dto.userinterfaceinfo.UserInterfaceInfoQueryRequest;
+
 import com.sonnet.model.entity.UserInterfaceInfo;
 import com.sonnet.service.UserInterfaceInfoService;
 import org.springframework.stereotype.Service;
@@ -56,6 +59,11 @@ public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoM
         updateWrapper.setSql("leftNum = leftNum - 1, totalNum = totalNum + 1");
         // 返回更新结果
         return this.update(updateWrapper);
+    }
+
+    @Override
+    public Wrapper<UserInterfaceInfo> getQueryWrapper(UserInterfaceInfoQueryRequest userInterfaceInfoQueryRequest) {
+        return null;
     }
 }
 

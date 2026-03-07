@@ -1,5 +1,6 @@
 package com.sonnet.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sonnet.annotation.AuthCheck;
 import com.sonnet.apicommon.model.entity.User;
 import com.sonnet.common.BaseResponse;
@@ -9,8 +10,8 @@ import com.sonnet.common.ResultUtils;
 import com.sonnet.constant.UserConstant;
 import com.sonnet.exception.BusinessException;
 import com.sonnet.exception.ThrowUtils;
-
 import com.sonnet.model.dto.userinterfaceinfo.UserInterfaceInfoAddRequest;
+import com.sonnet.model.dto.userinterfaceinfo.UserInterfaceInfoQueryRequest;
 import com.sonnet.model.dto.userinterfaceinfo.UserInterfaceInfoUpdateRequest;
 import com.sonnet.model.entity.UserInterfaceInfo;
 import com.sonnet.service.UserInterfaceInfoService;
@@ -120,6 +121,16 @@ public class UserInterfaceInfoController {
     }
 
 
+    @PostMapping("/list/page")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Page<UserInterfaceInfo>> listUserInterfaceInfoByPage(@RequestBody UserInterfaceInfoQueryRequest userInterfaceInfoQueryRequest,
+                                                   HttpServletRequest request) {
+        long current = userInterfaceInfoQueryRequest.getCurrent();
+        long size = userInterfaceInfoQueryRequest.getPageSize();
+        Page<UserInterfaceInfo> userInterfaceInfoPage = userInterfaceInfoService.page(new Page<>(current, size),
+                userInterfaceInfoService.getQueryWrapper(userInterfaceInfoQueryRequest));
+        return ResultUtils.success(userInterfaceInfoPage);
+    }
 
 
 }

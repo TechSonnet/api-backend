@@ -1,7 +1,10 @@
 package com.sonnet.service;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.sonnet.model.dto.userinterfaceinfo.UserInterfaceInfoQueryRequest;
 import com.sonnet.model.entity.UserInterfaceInfo;
+
 
 /**
 * @author chang
@@ -12,6 +15,8 @@ public interface UserInterfaceInfoService extends IService<UserInterfaceInfo> {
 
     void validUserInterfaceInfo(UserInterfaceInfo userInterfaceInfo, boolean b);
 
+
     boolean invokeCount(Long interfaceInfoId, Long userId);
 
+    Wrapper<UserInterfaceInfo> getQueryWrapper(UserInterfaceInfoQueryRequest userInterfaceInfoQueryRequest);
 }

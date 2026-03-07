@@ -74,18 +74,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             User user = new User();
             user.setUserAccount(userAccount);
             user.setUserPassword(encryptPassword);
-
             // 生成并分配 accessKey 和 secretKey
             String accessKey = DigestUtil.md5Hex(SALT + userAccount + RandomUtil.randomNumbers(5));
             String secretKey = DigestUtil.md5Hex(SALT + userAccount + RandomUtil.randomNumbers(5));
             // 插入注册用户信息
             user.setAccessKey(accessKey);
             user.setSecretKey(secretKey);
-
             boolean saveResult = this.save(user);
             if (!saveResult) {
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "注册失败，数据库错误");
             }
+
             return user.getId();
         }
     }

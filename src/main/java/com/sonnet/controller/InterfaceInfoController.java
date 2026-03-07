@@ -1,11 +1,18 @@
 package com.sonnet.controller;
 
+import cn.hutool.core.util.ReUtil;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
+import cn.hutool.http.HttpUtil;
+import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
 import com.sonnet.annotation.AuthCheck;
 import com.sonnet.apicommon.model.entity.InterfaceInfo;
 import com.sonnet.apicommon.model.entity.User;
 import com.sonnet.common.*;
+import com.sonnet.constant.CommonConstant;
 import com.sonnet.constant.UserConstant;
 import com.sonnet.exception.BusinessException;
 import com.sonnet.exception.ThrowUtils;
@@ -138,23 +145,20 @@ public class InterfaceInfoController {
         if (idRequest == null || idRequest.getId() < 0){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-
         // 获取需上线接口 ID，判断接口是否存在
         Long interfaceID = idRequest.getId();
         InterfaceInfo interfaceInfo = interfaceInfoService.getById(interfaceID);
         if (interfaceInfo == null){
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
-
         // todo 判断接口是否可用，借用开发的SDK，模拟调用
-
-
+        // 根据 ID 获取接口信息
+        // 发送地址进行模拟调用
         // 修改其对应状态
         InterfaceInfo newInterfaceInfo = new InterfaceInfo();
         newInterfaceInfo.setId(interfaceID);
         newInterfaceInfo.setStatus(InterfaceInfoStatusEnum.ONLINE.getValue());
         boolean result = interfaceInfoService.updateById(newInterfaceInfo);
-
         // 返回修改结果
         return ResultUtils.success(result);
     }
@@ -223,19 +227,51 @@ public class InterfaceInfoController {
         // 获取用户信息
         User loginUser = userService.getLoginUser(request);
 
-        // 解析前端参数，反序列化
-        Gson gson = new Gson();
-        org.example.apiinterfacesdk.model.User sdkUser = gson.fromJson(requestParams, org.example.apiinterfacesdk.model.User.class);
-        sdkUser.setUserAccount(loginUser.getUserAccount());
-        sdkUser.setAccessKey(loginUser.getAccessKey());
-        sdkUser.setSecretKey(loginUser.getSecretKey());
-        sdkUser.setUserPassword(loginUser.getUserPassword());
+        // 为了展示功能，这里使用一些真实可调用的接口
+//        // 解析前端参数，反序列化
+//        Gson gson = new Gson();
+//        org.example.apiinterfacesdk.model.User sdkUser = gson.fromJson(requestParams, org.example.apiinterfacesdk.model.User.class);
+//        sdkUser.setUserAccount(loginUser.getUserAccount());
+//        sdkUser.setAccessKey(loginUser.getAccessKey());
+//        sdkUser.setSecretKey(loginUser.getSecretKey());
+//        sdkUser.setUserPassword(loginUser.getUserPassword());
+//        // 接口调用
+//        String userNameByPost = apiClient.getUserNameByPost(sdkUser);
 
-        // 接口调用
-        String userNameByPost = apiClient.getUserNameByPost(sdkUser);
+        // 获取接口的请求地址，使用 hutool 工具实际调用接口
+        String targetUrl = oldInterfaceInfo.getUrl();
+
+        // 第一步：把自己伪装成真实的 Chrome 浏览器发请求
+        HttpResponse response = HttpRequest.get(targetUrl)
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+                .header("Accept", "application/json, text/plain, */*")
+                .timeout(5000) // 必须设置超时时间，防止对方服务器卡死导致你的程序一直等待
+                .execute();
+
+        String result = response.body();
+
+        // 第二步：检查有没有被对方的“反爬虫”或者“JS 重定向”卡住
+        if (result != null && result.contains("window.location.replace")) {
+
+            // 利用 Hutool 的正则工具 (ReUtil)，把那段 HTML 里的真实新网址抠出来
+            // 正则表达式会精准提取 replace(" 这里面的真实网址 ")
+            String realUrl = ReUtil.get("window\\.location\\.replace\\([\"'](.*?)[\"']\\)", result, 1);
+
+            if (realUrl != null && !realUrl.isEmpty()) {
+                // 第三步：拿着抠出来的真实网址，再发一次请求！
+                result = HttpRequest.get(realUrl)
+                        .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+                        .header("Accept", "application/json")
+                        .timeout(5000)
+                        .execute()
+                        .body();
+            }
+        }
+        // 到这里，result 里面装的就绝对是你想要的纯净 JSON 数据了！
+        System.out.println("最终拿到的结果：" + result);
 
         // 返回调用结果
-        return ResultUtils.success(userNameByPost);
+        return ResultUtils.success(result);
     }
 
     /**
@@ -264,12 +300,29 @@ public class InterfaceInfoController {
      * @return
      */
     @GetMapping("/list/page")
-    public BaseResponse<Page<InterfaceInfo>> listInterfaceInfoByPage(@RequestBody InterfaceInfoQueryRequest interfaceInfoQueryRequest,
+    public BaseResponse<Page<InterfaceInfo>> listInterfaceInfoByPage(InterfaceInfoQueryRequest interfaceInfoQueryRequest,
                                                    HttpServletRequest request) {
+        if (interfaceInfoQueryRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        InterfaceInfo interfaceInfoQuery = new InterfaceInfo();
+        BeanUtils.copyProperties(interfaceInfoQueryRequest, interfaceInfoQuery);
         long current = interfaceInfoQueryRequest.getCurrent();
         long size = interfaceInfoQueryRequest.getPageSize();
-        Page<InterfaceInfo> interfaceInfoPage = interfaceInfoService.page(new Page<>(current, size),
-                interfaceInfoService.getQueryWrapper(interfaceInfoQueryRequest));
+        String sortField = interfaceInfoQueryRequest.getSortField();
+        String sortOrder = interfaceInfoQueryRequest.getSortOrder();
+        String description = interfaceInfoQuery.getDescription();
+        // description 需支持模糊搜索
+        interfaceInfoQuery.setDescription(null);
+        // 限制爬虫
+        if (size > 50) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        QueryWrapper<InterfaceInfo> queryWrapper = new QueryWrapper<>(interfaceInfoQuery);
+        queryWrapper.like(StringUtils.isNotBlank(description), "description", description);
+        queryWrapper.orderBy(StringUtils.isNotBlank(sortField),
+                sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);
+        Page<InterfaceInfo> interfaceInfoPage = interfaceInfoService.page(new Page<>(current, size), queryWrapper);
         return ResultUtils.success(interfaceInfoPage);
     }
 

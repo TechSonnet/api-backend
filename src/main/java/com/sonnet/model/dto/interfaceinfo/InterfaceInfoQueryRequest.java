@@ -1,12 +1,13 @@
 package com.sonnet.model.dto.interfaceinfo;
 
+import com.sonnet.common.PageRequest;
 import lombok.Data;
 
 /**
  * 查询请求
  */
 @Data
-public class InterfaceInfoQueryRequest {
+public class InterfaceInfoQueryRequest extends PageRequest {
 
     /**
      * 主键

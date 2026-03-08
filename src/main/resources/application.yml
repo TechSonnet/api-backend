@@ -107,21 +107,22 @@ knife4j:
         api-rule-resources:
           - com.sonnet.controller
 
-# 以下配置指定了应用的名称、使用的协议（Dubbo）、注册中心的类型（Nacos）和地址
 dubbo:
   application:
-    # 设置应用的名称
-    name: dubbo-springboot-demo-provider
+    name: api-backend-provider # 1. 赋予唯一的名称
     qos-enable: true
     qos-port: 22221
-  # 指定使用 Dubbo 协议，且端口设置为 -1，表示随机分配可用端口
   protocol:
     name: dubbo
     port: 22222
-  # 配置注册中心为 Nacos，使用的地址是 nacos://localhost:8848
   registry:
     id: nacos-registry
     address: nacos://127.0.0.1:8848
+    use-file-cache: false
+  # 2. 额外增加元数据隔离（解决你之前的 mapping.cache 报错）
+  metadata-report:
+    address: nacos://127.0.0.1:8848
+    file: ${user.home}/.dubbo/backend-metadata.cache
 
 
 

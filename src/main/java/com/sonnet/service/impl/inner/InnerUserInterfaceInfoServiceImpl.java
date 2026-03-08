@@ -19,13 +19,14 @@ public class InnerUserInterfaceInfoServiceImpl implements InnerUserInterfaceInfo
     @Override
     public boolean invokeCount(long interfaceInfoId, long userId) {
 
-        // 1. 基本校验
+        // 基本参数校验
         if (interfaceInfoId <= 0 || userId <= 0){
             throw new BusinessException(ErrorCode.SYSTEM_ERROR);
         }
 
-        // 2. 增加特定接口的调用次数
-        // 3. 返回操作结果
+        // 使用 UpdateWrapper 构造更新条件
+        // 执行更新操作
+        // 返回操作结果
         return userInterfaceInfoService.invokeCount(interfaceInfoId, userId);
     }
 }

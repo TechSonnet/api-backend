@@ -1,5 +1,7 @@
 package com.sonnet.controller;
 
+import com.alibaba.excel.util.StringUtils;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sonnet.annotation.AuthCheck;
 import com.sonnet.apicommon.model.entity.User;
@@ -7,6 +9,7 @@ import com.sonnet.common.BaseResponse;
 import com.sonnet.common.DeleteRequest;
 import com.sonnet.common.ErrorCode;
 import com.sonnet.common.ResultUtils;
+import com.sonnet.constant.CommonConstant;
 import com.sonnet.constant.UserConstant;
 import com.sonnet.exception.BusinessException;
 import com.sonnet.exception.ThrowUtils;
@@ -18,13 +21,11 @@ import com.sonnet.service.UserInterfaceInfoService;
 import com.sonnet.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  *  接口管理
@@ -121,16 +122,55 @@ public class UserInterfaceInfoController {
     }
 
 
-    @PostMapping("/list/page")
+
+    @GetMapping("/list")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Page<UserInterfaceInfo>> listUserInterfaceInfoByPage(@RequestBody UserInterfaceInfoQueryRequest userInterfaceInfoQueryRequest,
-                                                   HttpServletRequest request) {
+    public BaseResponse<List<UserInterfaceInfo>> listUserInterfaceInfo(UserInterfaceInfoQueryRequest userInterfaceInfoQueryRequest,
+                                                                 HttpServletRequest request){
+
+        if (userInterfaceInfoQueryRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        UserInterfaceInfo userInterfaceInfoQuery = new UserInterfaceInfo();
+        BeanUtils.copyProperties(userInterfaceInfoQueryRequest, userInterfaceInfoQuery);
+        QueryWrapper<UserInterfaceInfo> queryWrapper = new QueryWrapper<>(userInterfaceInfoQuery);
+        List<UserInterfaceInfo> userInterfaceInfoList = userInterfaceInfoService.list(queryWrapper);
+        return ResultUtils.success(userInterfaceInfoList);
+
+    }
+
+
+    /**
+     * 分页查询（仅管理员）
+     * @param userInterfaceInfoQueryRequest
+     * @param request
+     * @return
+     */
+    @GetMapping("/list/page")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Page<UserInterfaceInfo>> listInterfaceInfoByPage(UserInterfaceInfoQueryRequest userInterfaceInfoQueryRequest,
+                                                                         HttpServletRequest request) {
+        if (userInterfaceInfoQueryRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+
+        UserInterfaceInfo interfaceInfoQuery = new UserInterfaceInfo();
+        BeanUtils.copyProperties(userInterfaceInfoQueryRequest, interfaceInfoQuery);
         long current = userInterfaceInfoQueryRequest.getCurrent();
         long size = userInterfaceInfoQueryRequest.getPageSize();
-        Page<UserInterfaceInfo> userInterfaceInfoPage = userInterfaceInfoService.page(new Page<>(current, size),
-                userInterfaceInfoService.getQueryWrapper(userInterfaceInfoQueryRequest));
+        String sortField = userInterfaceInfoQueryRequest.getSortField();
+        String sortOrder = userInterfaceInfoQueryRequest.getSortOrder();
+        // 限制爬虫
+        if (size > 50) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        QueryWrapper<UserInterfaceInfo> queryWrapper = new QueryWrapper<>(interfaceInfoQuery);
+        queryWrapper.orderBy(StringUtils.isNotBlank(sortField),
+                sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);
+        Page<UserInterfaceInfo> userInterfaceInfoPage = userInterfaceInfoService.page(new Page<>(current, size), queryWrapper);
         return ResultUtils.success(userInterfaceInfoPage);
     }
+
 
 
 }

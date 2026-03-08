@@ -21,19 +21,23 @@ import org.springframework.stereotype.Service;
 public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoMapper, UserInterfaceInfo>
     implements UserInterfaceInfoService{
 
+    private final UserInterfaceInfoMapper userInterfaceInfoMapper;
+
+    public UserInterfaceInfoServiceImpl(UserInterfaceInfoMapper userInterfaceInfoMapper) {
+        this.userInterfaceInfoMapper = userInterfaceInfoMapper;
+    }
+
     @Override
     public void validUserInterfaceInfo(UserInterfaceInfo userInterfaceInfo, boolean b) {
         if (userInterfaceInfo == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-
         // 如果是某一种操作，比如说添加操作
         if (b) {
             if (userInterfaceInfo.getInterfaceInfoId() <= 0 || userInterfaceInfo.getUserId() <= 0){
                 throw new BusinessException(ErrorCode.PARAMS_ERROR);
             }
         }
-
         if (userInterfaceInfo.getLeftNum() < 0){
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "剩余次数不可小于0");
         }
@@ -52,17 +56,20 @@ public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoM
         if (interfaceInfoId <= 0 || userId <= 0){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        // 构造更新条件，并执行更新操作
-        UpdateWrapper<UserInterfaceInfo> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("interfaceInfoId", interfaceInfoId);
-        updateWrapper.eq("userId", userId);
-        updateWrapper.setSql("leftNum = leftNum - 1, totalNum = totalNum + 1");
+        // 执行更新操作
+        int affectRows = userInterfaceInfoMapper.updateInvokeCount(interfaceInfoId, userId);
+        if (affectRows <= 0){
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "更新数据失败，剩余次数补足或无权限");
+        }
+
         // 返回更新结果
-        return this.update(updateWrapper);
+        return true;
     }
 
     @Override
     public Wrapper<UserInterfaceInfo> getQueryWrapper(UserInterfaceInfoQueryRequest userInterfaceInfoQueryRequest) {
+
+
         return null;
     }
 }

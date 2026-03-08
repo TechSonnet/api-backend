@@ -20,4 +20,12 @@
         id,userId,interfaceInfoId,totalNum,leftNum,status,
         createTime,updateTime,isDelete
     </sql>
+    <update id="updateInvokeCount">
+        update user_interface_info
+        set totalNum = totalNum + 1,
+        leftNum = leftNum - 1
+        where id = #{interfaceInfoId}
+        and userId = #{userId}
+        and leftNum > 0;
+    </update>
 </mapper>

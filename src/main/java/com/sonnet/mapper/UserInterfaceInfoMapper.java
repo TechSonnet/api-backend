@@ -2,6 +2,7 @@ package com.sonnet.mapper;
 
 import com.sonnet.model.entity.UserInterfaceInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
 * @author chang
@@ -10,6 +11,14 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @Entity com.sonnet.model.entity.UserInterfaceInfo
 */
 public interface UserInterfaceInfoMapper extends BaseMapper<UserInterfaceInfo> {
+
+    /**
+     * 更新调用次数
+     * @param interfaceInfoId
+     * @param userId
+     * @return
+     */
+    int updateInvokeCount(@Param("interfaceInfoId") long interfaceInfoId, @Param("userId") long userId);
 
 }
 

@@ -3,10 +3,11 @@ package com.sonnet.service;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.sonnet.apicommon.model.entity.InterfaceInfo;
-import com.sonnet.apicommon.model.vo.InterfaceInfoVO;
 import com.sonnet.model.dto.interfaceinfo.InterfaceInfoQueryRequest;
+import com.sonnet.model.vo.InterfaceInfoVO;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
 * @author Administrator
@@ -17,7 +18,14 @@ public interface InterfaceInfoService extends IService<InterfaceInfo> {
 
     void validInterfaceInfo(InterfaceInfo interfaceInfo, boolean b);
 
-    InterfaceInfoVO getInterfaceInfoVO(InterfaceInfo interfaceInfo, HttpServletRequest request);
+
 
     Wrapper<InterfaceInfo> getQueryWrapper(InterfaceInfoQueryRequest interfaceInfoQueryRequest);
+
+    /**
+     * 获取最热门的接口信息
+     * @param count
+     * @return
+     */
+    List<InterfaceInfoVO> listTopInvokeInterfaceInfos(int count);
 }

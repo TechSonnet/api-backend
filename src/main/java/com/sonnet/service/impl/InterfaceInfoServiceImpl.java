@@ -4,16 +4,20 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sonnet.apicommon.model.entity.InterfaceInfo;
-import com.sonnet.apicommon.model.vo.InterfaceInfoVO;
 import com.sonnet.common.ErrorCode;
 import com.sonnet.exception.BusinessException;
 import com.sonnet.mapper.InterfaceInfoMapper;
+import com.sonnet.mapper.UserInterfaceInfoMapper;
 import com.sonnet.model.dto.interfaceinfo.InterfaceInfoQueryRequest;
+import com.sonnet.model.vo.InterfaceInfoVO;
 import com.sonnet.service.InterfaceInfoService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
+import java.util.List;
 
 /**
 * @author Administrator
@@ -23,6 +27,9 @@ import javax.servlet.http.HttpServletRequest;
 @Service
 public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, InterfaceInfo>
     implements InterfaceInfoService {
+
+    @Resource
+    private UserInterfaceInfoMapper userInterfaceInfoMapper;
 
     @Override
     public void validInterfaceInfo(InterfaceInfo interfaceInfo, boolean add) {
@@ -43,18 +50,13 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         }
     }
 
+
+
     /**
-     * 转换 vo 对象
-     * @param interfaceInfo
-     * @param request
+     * 获取查询条件
+     * @param interfaceInfoQueryRequest
      * @return
      */
-    @Override
-    public InterfaceInfoVO getInterfaceInfoVO(InterfaceInfo interfaceInfo, HttpServletRequest request) {
-        // 转换为 VO 对象
-        return InterfaceInfoVO.objToVo(interfaceInfo);
-    }
-
     @Override
     public Wrapper<InterfaceInfo> getQueryWrapper(InterfaceInfoQueryRequest interfaceInfoQueryRequest) {
 
@@ -78,6 +80,23 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
                 .like(StringUtils.isNotBlank(method), "method", method)
                 .like(StringUtils.isNotBlank(requestParams), "requestParams", requestParams);
     }
+
+    @Override
+    public List<InterfaceInfoVO> listTopInvokeInterfaceInfos(int count) {
+
+        // 基本校验
+        if (count <= 0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "The count is invalid!");
+        }
+        // 查询信息
+        List<InterfaceInfoVO> interfaceInfoVOS = userInterfaceInfoMapper.listTopInvokeInterfaceInfos(count);
+        if (interfaceInfoVOS != null){
+            return interfaceInfoVOS;
+        }
+
+        return Collections.emptyList();
+    }
+
 
 }
 

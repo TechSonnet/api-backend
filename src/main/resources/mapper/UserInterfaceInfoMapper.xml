@@ -28,4 +28,14 @@
         and userId = #{userId}
         and leftNum > 0;
     </update>
+    <select id="listTopInvokeInterfaceInfos" resultType="com.sonnet.model.vo.InterfaceInfoVO">
+        select t2.name as interfaceName, t1.interfaceInfoId, sum(t1.totalNum) as totalNum
+        from user_interface_info t1
+        join interface_info t2
+        on t1.interfaceInfoId = t2.id
+        group by t1.interfaceInfoId, t2.name
+        order by totalNum desc
+        limit 3;
+    </select>
+
 </mapper>

@@ -3,11 +3,8 @@ package com.sonnet.controller;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
-import cn.hutool.http.HttpUtil;
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.google.gson.Gson;
 import com.sonnet.annotation.AuthCheck;
 import com.sonnet.apicommon.model.entity.InterfaceInfo;
 import com.sonnet.apicommon.model.entity.User;
@@ -20,10 +17,9 @@ import com.sonnet.model.dto.interfaceinfo.InterfaceInfoAddRequest;
 import com.sonnet.model.dto.interfaceinfo.InterfaceInfoInvokeRequest;
 import com.sonnet.model.dto.interfaceinfo.InterfaceInfoQueryRequest;
 import com.sonnet.model.dto.interfaceinfo.InterfaceInfoUpdateRequest;
-import com.sonnet.model.dto.user.UserQueryRequest;
 import com.sonnet.model.enums.InterfaceInfoStatusEnum;
-import com.sonnet.model.vo.UserVO;
 import com.sonnet.service.InterfaceInfoService;
+import com.sonnet.service.UserInterfaceInfoService;
 import com.sonnet.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -34,7 +30,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  *  接口管理
@@ -53,6 +48,8 @@ public class InterfaceInfoController {
 
     @Autowired
     private ApiClient apiClient;
+    @Autowired
+    private UserInterfaceInfoService userInterfaceInfoService;
 
 
     // region 增删改查
@@ -214,9 +211,9 @@ public class InterfaceInfoController {
         }
 
         // 获取请求中的接口参数并进行校验
-        Long id = interfaceInfoInvokeRequest.getId();
+        Long interfaceId = interfaceInfoInvokeRequest.getId();
         String requestParams = interfaceInfoInvokeRequest.getRequestParams();
-        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
+        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(interfaceId);
         if (oldInterfaceInfo == null){
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
@@ -228,16 +225,6 @@ public class InterfaceInfoController {
         User loginUser = userService.getLoginUser(request);
 
         // 为了展示功能，这里使用一些真实可调用的接口
-//        // 解析前端参数，反序列化
-//        Gson gson = new Gson();
-//        org.example.apiinterfacesdk.model.User sdkUser = gson.fromJson(requestParams, org.example.apiinterfacesdk.model.User.class);
-//        sdkUser.setUserAccount(loginUser.getUserAccount());
-//        sdkUser.setAccessKey(loginUser.getAccessKey());
-//        sdkUser.setSecretKey(loginUser.getSecretKey());
-//        sdkUser.setUserPassword(loginUser.getUserPassword());
-//        // 接口调用
-//        String userNameByPost = apiClient.getUserNameByPost(sdkUser);
-
         // 获取接口的请求地址，使用 hutool 工具实际调用接口
         String targetUrl = oldInterfaceInfo.getUrl();
 
@@ -267,7 +254,8 @@ public class InterfaceInfoController {
                         .body();
             }
         }
-        // 到这里，result 里面装的就绝对是你想要的纯净 JSON 数据了！
+        boolean res = userInterfaceInfoService.invokeCount(interfaceId, loginUser.getId());
+        // 到这里，result 里面装的就绝对纯净 JSON 数据
         System.out.println("最终拿到的结果：" + result);
 
         // 返回调用结果

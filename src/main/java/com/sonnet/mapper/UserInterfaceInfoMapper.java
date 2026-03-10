@@ -2,7 +2,10 @@ package com.sonnet.mapper;
 
 import com.sonnet.model.entity.UserInterfaceInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.sonnet.model.vo.InterfaceInfoVO;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
 * @author chang
@@ -19,6 +22,8 @@ public interface UserInterfaceInfoMapper extends BaseMapper<UserInterfaceInfo> {
      * @return
      */
     int updateInvokeCount(@Param("interfaceInfoId") long interfaceInfoId, @Param("userId") long userId);
+
+    List<InterfaceInfoVO> listTopInvokeInterfaceInfos (@Param("limit") int limit);
 
 }
 

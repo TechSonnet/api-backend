@@ -1,0 +1,37 @@
+server:
+  port: 8090
+
+spring:
+  profiles:
+    active: dev # 默认开发环境
+  main:
+    web-application-type: reactive # 响应式编程模型，网关必备
+  cloud:
+    gateway:
+      default-filters:
+        - AddRequestHeader=accesskey, techsonnet
+      routes:
+        - id: api_route
+          uri: http://localhost:8123 # 开发环境指向本地后端接口
+          predicates:
+            - Path=/api/**
+
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE # 开发环境开启详细日志方便调试
+
+dubbo:
+  application:
+    name: api-gateway-consumer # 消费者名称，已与后端区分
+    qos-enable: true
+    qos-port: 22224
+  protocol:
+    name: dubbo
+    port: 22223
+  registry:
+    id: nacos-registry
+    address: nacos://127.0.0.1:8848
+    use-file-cache: false
+  metadata-report:
+    address: nacos://127.0.0.1:8848
+    file: ${user.home}/.dubbo/gateway-metadata.cache

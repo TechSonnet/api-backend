@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: api-interface
+  profiles:
+    active: dev # This ensures it runs as 'dev' by default in your IDE
+  session:
+    timeout: 2592000
+  cassandra:
+    port: 8123
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  threads:
+    virtual:
+      enabled: true
+
+
+server:
+  servlet:
+    context-path: /api
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: false
+  global-config:
+    db-config:
+      logic-delete-field: isDelete
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+

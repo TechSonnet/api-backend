@@ -45,7 +45,7 @@ import org.springframework.web.bind.annotation.RestController;
 import static com.sonnet.service.impl.UserServiceImpl.SALT;
 
 /**
- * 用户接口
+ * 用户管理
  *
  */
 @RestController

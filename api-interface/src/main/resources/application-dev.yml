@@ -1,0 +1,14 @@
+server:
+  port: 8123
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/my_db
+    username: root
+    password: root
+
+mybatis-plus:
+  configuration:
+    # We only want to print SQL logs to the console in the Dev environment
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

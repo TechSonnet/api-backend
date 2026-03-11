@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
- *  接口管理
+ *  用户-接口信息
  */
 
 @RestController

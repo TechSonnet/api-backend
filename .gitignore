@@ -37,3 +37,7 @@ build/
 **/application-prod.yml
 .env
 config/prod_secrets.json
+
+# other ignore file
+.mvn
+.claude
